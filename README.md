@@ -13,9 +13,15 @@ the native board sources and a reproducible kernel configuration.
 | Sensors | MC3xxx, PA22x and QMCX983 drivers compile; hardware acceptance pending |
 | Radio | Legacy MediaTek connectivity and modem sources; Wi-Fi, Bluetooth, GPS and telephony require device tests |
 
-The native kernel has compiled previously. This clean source publication has
-not yet passed a new full kernel build or a device boot. It is not a flash
-release or a claim of Android 13 compatibility.
+The complete native kernel at `6cda79976b16` passed its
+[cloud build](https://github.com/ReMeizu/build-infra/actions/runs/36909849054).
+The generated configuration and board DTB matched the reviewed pins; the
+AArch64 kernel link and selected driver objects were independently verified.
+
+Boot packaging is on hold: no accepted native custom boot is available,
+and the stock boot's DTB differs from the newly compiled board data.
+Device boot and hardware acceptance remain pending; Android 13 compatibility
+has not been established.
 
 Build configuration: `arch/arm64/configs/m5s_verified.config`.
 Board DTS: `arch/arm64/boot/dts/m5s.dts`.
