@@ -1,0 +1,6 @@
+# Legacy MediaTek panel makefiles include this optional project hook.
+#
+# Keep it present but empty in this tree so Kbuild can descend into LCM
+# directories that unconditionally include $(srctree)/drivers/misc/mediatek/
+# Makefile.custom.
+
