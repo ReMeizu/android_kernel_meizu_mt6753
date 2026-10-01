@@ -1,0 +1,7 @@
+config MTK_PA22X
+	bool "TXC PA22x (PA224/PA22A) for MediaTek package"
+	default n
+	help
+	  TXC PA22x series 2-in-1 ambient light + proximity sensor driver
+	  (MTK alsps framework). Real ALS/PS chip of Meizu M5s (M1612):
+	  i2c2 @ 0x1e, stock Flyme kernel binds driver "pa22x" there.

@@ -1,0 +1,1152 @@
+
+/dts-v1/;
+
+#include "mt6753.dtsi"
+#include <dt-bindings/lcm/r63417_fhd_dsi_cmd_truly_nt50358.dtsi>
+
+/ {
+/delete-node/ s5k3m2_cal@0;
+
+memory@00000000 {
+		device_type = "memory";
+		/* M1612 live DT dump (3GB, three LK-carved ranges); LK rewrites
+		 * this node from EMI settings at boot anyway. */
+		reg = <0 0x40000000 0 0x3c3c0000>,
+		      <0 0x80000000 0 0x20000000>,
+		      <0 0xa0000000 0 0x5f370000>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		reserve-memory-ccci_md3 {
+			compatible = "mediatek,reserve-memory-ccci_md3";
+			no-map;
+			size = <0 0x00b00000>;
+			alignment = <0 0x2000000>;
+			alloc-ranges = <0 0x40000000 0 0xc0000000>;
+		};
+	};
+
+	bus {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0 0 0 0xffffffff>;
+
+		MTKFB@5e200000 {
+			compatible = "mediatek,MTKFB";
+			reg = <0x7F000000 0x1000000>;
+		};
+
+	};
+	led0:led@0 {
+		compatible = "mediatek,red";
+		led_mode = <3>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led1:led@1 {
+		compatible = "mediatek,green";
+		led_mode = <0>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led2:led@2 {
+		compatible = "mediatek,blue";
+		led_mode = <0>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led3:led@3 {
+		compatible = "mediatek,jogball-backlight";
+		led_mode = <0>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led4:led@4 {
+		compatible = "mediatek,keyboard-backlight";
+		led_mode = <0>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led5:led@5 {
+		compatible = "mediatek,button-backlight";
+		led_mode = <0>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led6:led@6 {
+		compatible = "mediatek,lcd-backlight";
+		/* Stock m2note 3.10 drives LCD brightness through DISP BLS PWM. */
+		led_mode = <5>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	led7:led@7 {
+		compatible = "mediatek,mx-led";
+		led_mode = <3>;
+		data = <1>;
+		pwm_config = <0 0 0 0 0>;
+	};
+	vibrator0:vibrator@0 {
+		compatible = "mediatek,vibrator";
+		vib_timer = <25>;
+		vib_limit = <9>;
+		vib_vol= <6>;
+	};
+ /* sensor standardization */
+
+	/* M1612 live DT dump: two accel candidates, N2DM@0x08 + MC3410@0x4c.
+	 * Runtime evidence: MC3XXX driver bound at i2c2-0x4c on stock. */
+	cust_accel@0 {
+		compatible = "mediatek,N2DM";
+		i2c_num	= <2>;
+		i2c_addr = <0x08 0 0 0>;
+		direction = <2>;
+		power_id = <0xffff>;
+		power_vol = <0>;
+		firlen = <16>;
+		is_batch_supported = <0>;
+	};
+	cust_accel@1 {
+		compatible = "mediatek,mc3410";
+		i2c_num	= <2>;
+		i2c_addr = <0x4c 0 0 0>;
+		direction = <0>;
+		power_id = <0xffff>;
+		power_vol = <0>;
+		firlen = <16>;
+		is_batch_supported = <0>;
+	};
+
+	/* M1612 live DT dump: three ALS/PS candidates; runtime bound = PA22x@0x1e. */
+	cust_alsps@0 {
+		compatible = "mediatek,stk3x1x-hw";
+		i2c_num	= <2>;
+		i2c_addr = <0x48 0 0 0>;
+		polling_mode_ps = <0>;
+		polling_mode_als = <1>;
+		power_id = <0xffff>;
+		power_vol = <0>;
+		als_level = <0 8 100 180 270 650 1200 1800 3000 4000 5000 7000 9000 15000 20000>;
+		als_value = <0 0 150 340 430 570 700 800 950 1500 3000 5000 7000 9000 10240 10240>;
+		ps_threshold_high		=  <1200>;
+		ps_threshold_low		=  <1000>;
+		is_batch_supported_ps	= <0>;
+		is_batch_supported_als	= <0>;
+	};
+	cust_alsps@1 {
+		compatible = "mediatek,epl259x-hw";
+		i2c_num	= <2>;
+		i2c_addr = <0x49 0 0 0>;
+		polling_mode_ps = <0>;
+		polling_mode_als = <1>;
+		power_id = <0xffff>;
+		power_vol = <0>;
+		als_level = <0 8 100 180 270 650 1200 1800 3000 4000 5000 7000 9000 15000 20000>;
+		als_value = <0 0 150 340 430 570 700 800 950 1500 3000 5000 7000 9000 10240 10240>;
+		ps_threshold_high		=  <3000>;
+		ps_threshold_low		=  <2200>;
+		is_batch_supported_ps	= <0>;
+		is_batch_supported_als	= <0>;
+	};
+	cust_alsps@2 {
+		compatible = "mediatek,pa22x-hw";
+		i2c_num	= <2>;
+		i2c_addr = <0x1e 0 0 0>;
+		polling_mode_ps = <0>;
+		polling_mode_als = <1>;
+		power_id = <0xffff>;
+		power_vol = <0>;
+		als_level = <0 8 100 180 270 650 1200 1800 3000 4000 5000 7000 9000 15000 20000>;
+		als_value = <0 0 150 340 430 570 700 800 950 1500 3000 5000 7000 9000 10240 10240>;
+		ps_threshold_high		=  <70>;
+		ps_threshold_low		=  <40>;
+		is_batch_supported_ps	= <0>;
+		is_batch_supported_als	= <0>;
+	};
+
+	/* M1612 live DT dump: mag candidates QMC983x@0x2d (runtime bound) + AF8133i@0x1c. */
+	cust_mag@0 {
+		compatible				= "mediatek,qmcX983";
+		i2c_num					= <2>;
+		i2c_addr				= <0x2d 0 0 0>;
+		direction				= <2>;
+		power_id				= <0xffff>;
+		power_vol				= <0>;
+		is_batch_supported			= <0>;
+	};
+	cust_mag@1 {
+		compatible				= "mediatek,af7133e_af8133i";
+		i2c_num					= <2>;
+		i2c_addr				= <0x1c 0 0 0>;
+		direction				= <0>;
+		power_id				= <0xffff>;
+		power_vol				= <0>;
+		is_batch_supported			= <0>;
+	};
+
+	/* M1612 live DT dump: cust_gyro itg1010@0x68 present in stock DT, but no
+	 * gyro driver bound at runtime (no HW gyro; sensorservice exposes
+	 * software gyroscope only). Kept dump-faithful. */
+	cust_gyro@0 {
+		compatible				= "mediatek,itg1010";
+		i2c_num					= <2>;
+		i2c_addr				= <0x68 0 0 0>;
+		direction				= <3>;
+		power_id				= <0xffff>;
+		power_vol				= <0>;
+		firlen					= <0>;
+		is_batch_supported			= <0>;
+	};
+
+};
+/* sensor gpio standization */
+&pio {
+	/*meizu-sw, chenzz3, configure P/L sensor device, begin*/
+	/* M1612 live DT dump: ALS/PS int is GPIO1 (m2note used GPIO18). */
+	alsps_intpin_cfg: alspspincfg {
+
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO1__FUNC_GPIO1>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	alsps_intpin_default: alspsdefaultcfg {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO1__FUNC_GPIO1>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	/* M1612 stock DT has no mag/gsensor int pinctrl (both polled); labels
+	 * kept empty so &mag/&gsensor pinctrl refs stay valid. m2note used
+	 * GPIO91/GPIO11 here, but on M1612 GPIO11 is cam1 reset. */
+	mag_intpin_cfg: magpincfg {
+	};
+
+	mag_intpin_default: magdefaultcfg {
+	};
+
+	gsensor_intpin_cfg: gensorpincfg {
+	};
+
+	gsensor_intpin_default: gensordefaultcfg {
+	};
+	gyro_intpin_cfg: gyropincfg {
+
+	    pins_cmd_dat {
+			/* M1612 live DT dump: gyropincfg is GPIO67 (m2note used GPIO12). */
+			pins = <PINMUX_GPIO67__FUNC_GPIO67>;
+			slew-rate = <0>;
+			bias-pull-down = <00>;
+		};
+	};
+
+	gyro_intpin_default: gyrodefaultcfg {
+
+	};
+};
+
+/*Meizu-sw weimh1 add 2016-3-3 begin:add for stepcounter*/
+&gsensor {
+	pinctrl-names = "pin_default", "pin_cfg";
+	pinctrl-0 = <&gsensor_intpin_default>;
+	pinctrl-1 = <&gsensor_intpin_cfg>;
+	status = "okay";
+};
+
+
+&alsps {
+	pinctrl-names = "pin_default", "pin_cfg";
+	pinctrl-0 = <&alsps_intpin_default>;
+	pinctrl-1 = <&alsps_intpin_cfg>;
+	status = "okay";
+
+};
+/* sensor end */
+
+&mag {
+	pinctrl-names = "pin_default", "pin_cfg";
+	pinctrl-0 = <&mag_intpin_default>;
+	pinctrl-1 = <&mag_intpin_cfg>;
+	status = "okay";
+};
+/*meizu-sw caoyi1 modify end*/
+
+&gyro {
+	pinctrl-names = "pin_default", "pin_cfg";
+	pinctrl-0 = <&gyro_intpin_default>;
+	pinctrl-1 = <&gyro_intpin_cfg>;
+	status = "okay";
+
+};
+/* M1612 live DT dump values (mic-mode 1 = ACC, mode-setting word2 0x500,
+ * three-key UP_MAX 180). */
+&accdet {
+		accdet-mic-vol = <7>;
+		headset-mode-setting = <0x500 0x500 1 0x1F0 0x800 0x800 0x20>;
+		accdet-plugout-debounce = <20>;
+		/*1:ACC mode, 2:low cost without in bias, 6:low cost with in bias*/
+		accdet-mic-mode = <1>;
+		/*0--MD_MAX--UP_MAX--DW_MAX*/
+		headset-three-key-threshold = <0 80 180 500>;
+		/*0--MD_MAX--VOICE_MAX--UP_MAX--DW_MAX*/
+		headset-four-key-threshold = <0 58 121 192 450>;
+};
+&touch {
+	interrupt-parent = <&eintc>;
+	interrupts = <10 2>;
+	debounce = <10 0>;
+	/* M1612 live DT dump: 720x1280 panel, 3 capacitive keys
+	 * (MENU/HOMEPAGE/BACK), 10-finger, tpd filter off in stock. */
+	tpd-resolution = <720 1280>;
+	use-tpd-button = <0>;
+	tpd-key-num = <3>;
+	tpd-key-local = <139 172 158 0>;
+	tpd-key-dim-local = <90 883 100 40 230 883 100 40 370 883 100 40 0 0 0 0>;
+	tpd-max-touch-num = <10>;
+	tpd-filter-enable = <0>;
+	tpd-filter-pixel-density = <186>;
+	tpd-filter-custom-prameters = <0 0 0 0 0 0 0 0 0 0 0 0>;
+	tpd-filter-custom-speed = <0 0 0>;
+	pinctrl-names = "default", "state_eint_as_int", "state_eint_output0", "state_eint_output1",
+		"state_rst_output0", "state_rst_output1";
+	pinctrl-0 = <&CTP_pins_default>;
+	pinctrl-1 = <&CTP_pins_eint_as_int>;
+	pinctrl-2 = <&CTP_pins_eint_output0>;
+	pinctrl-3 = <&CTP_pins_eint_output1>;
+	pinctrl-4 = <&CTP_pins_rst_output0>;
+	pinctrl-5 = <&CTP_pins_rst_output1>;
+	status = "okay";
+};
+
+&keypad {
+	mediatek,kpd-key-debounce = <1024>;
+	mediatek,kpd-sw-pwrkey = <116>;
+	mediatek,kpd-hw-pwrkey = <8>;
+	mediatek,kpd-sw-rstkey = <102>;
+	mediatek,kpd-hw-rstkey = <17>;
+	mediatek,kpd-use-extend-type = <0>;
+	mediatek,kpd-hw-map-num = <72>;
+	mediatek,kpd-hw-init-map = <114 115 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+				0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+				0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 >;
+	mediatek,kpd-pwrkey-eint-gpio = <0>;
+	mediatek,kpd-pwrkey-gpio-din = <0>;
+	/* M1612 live DT dump: dl-key0=1 dl-key1=0 dl-key2=8. */
+	mediatek,kpd-hw-dl-key0 = <1>;
+	mediatek,kpd-hw-dl-key1 = <0>;
+	mediatek,kpd-hw-dl-key2 = <8>;
+	mediatek,kpd-hw-recovery-key = <1>;
+	mediatek,kpd-hw-factory-key = <0>;
+};
+
+&spi0 {
+	/delete-node/ fpc1020@1;
+};
+
+&eintc {
+	/delete-node/ FPC_INT@7;
+};
+
+&pio {
+	CTP_pins_default: eint0default {
+	};
+	CTP_pins_eint_as_int: eint@0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO10__FUNC_GPIO10>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+	CTP_pins_eint_output0: eintoutput0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO10__FUNC_GPIO10>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	CTP_pins_eint_output1: eintoutput1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO10__FUNC_GPIO10>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	CTP_pins_rst_output0: rstoutput0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO62__FUNC_GPIO62>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	CTP_pins_rst_output1: rstoutput1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO62__FUNC_GPIO62>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+};
+/* TOUCH end */
+/* CAMERA GPIO standardization */
+/* m2note board pins: keep this in parity with mach/mt6735/m2note/dct/dct/cust_gpio.dtsi */
+&pio {
+	camera_pins_cam0_rst0: cam0@0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO44__FUNC_GPIO44>;/*GPIO_CAMERA_CMRST_PIN*/
+			slew-rate = <1>; /*direction 0:in, 1:out*/
+			output-low;/*direction out used only. output_low or high*/
+		};
+	};
+	camera_pins_cam0_rst1: cam0@1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO44__FUNC_GPIO44>;/*GPIO_CAMERA_CMRST_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	camera_pins_cam0_pnd0: cam0@2 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO7__FUNC_GPIO7>;/*GPIO_CAMERA_CMPDN_PIN*/
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	camera_pins_cam0_pnd1: cam0@3 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO7__FUNC_GPIO7>;/*GPIO_CAMERA_CMPDN_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+
+	camera_pins_cam0_mclk_0: cam0@4 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO45__FUNC_GPIO45>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	camera_pins_cam0_mclk_1: cam0@5 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO45__FUNC_CMMCLK0>;
+			slew-rate = <1>;
+		};
+	};
+
+	/* M1612 live DT dump: cam1 rst=GPIO11, pnd=GPIO12 (m2note: 66/65). */
+	camera_pins_cam1_rst0: cam1@0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO11__FUNC_GPIO11>;/*GPIO_CAMERA_CMRST1_PIN*/
+			slew-rate = <1>; /*direction 0:in, 1:out*/
+			output-low;/*direction out used only. output_low or high*/
+		};
+	};
+	camera_pins_cam1_rst1: cam1@1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO11__FUNC_GPIO11>;/*GPIO_CAMERA_CMRST1_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	camera_pins_cam1_pnd0: cam1@2 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO12__FUNC_GPIO12>;/*GPIO_CAMERA_CMPDN1_PIN*/
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	camera_pins_cam1_pnd1: cam1@3 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO12__FUNC_GPIO12>;/*GPIO_CAMERA_CMPDN1_PIN*/
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+
+		camera_pins_cam1_mclk_0: cam1@4 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO46__FUNC_GPIO46>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	camera_pins_cam1_mclk_1: cam1@5 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO46__FUNC_CMMCLK1>;
+			slew-rate = <1>;
+		};
+	};
+
+	camera_pins_cam_ldo0_0: cam1@6 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO68__FUNC_GPIO68>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	camera_pins_cam_ldo0_1: cam1@7 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO68__FUNC_GPIO68>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+	camera_pins_default: camdefault {
+
+	};
+	
+	
+};
+
+&kd_camera_hw1 {
+	pinctrl-names = "default", "cam0_rst0", "cam0_rst1", "cam0_pnd0", "cam0_pnd1",
+		"cam0_mclk0","cam0_mclk1",
+	"cam1_rst0", "cam1_rst1", "cam1_pnd0", "cam1_pnd1",
+	"cam1_mclk0","cam1_mclk1",
+	"cam_ldo0_0", "cam_ldo0_1";
+	pinctrl-0 = <&camera_pins_default>;
+	pinctrl-1 = <&camera_pins_cam0_rst0>;
+	pinctrl-2 = <&camera_pins_cam0_rst1>;
+	pinctrl-3 = <&camera_pins_cam0_pnd0>;
+	pinctrl-4 = <&camera_pins_cam0_pnd1>;
+	pinctrl-5 = <&camera_pins_cam0_mclk_0>;
+	pinctrl-6 = <&camera_pins_cam0_mclk_1>;
+	pinctrl-7= <&camera_pins_cam1_rst0>;
+	pinctrl-8 = <&camera_pins_cam1_rst1>;
+	pinctrl-9 = <&camera_pins_cam1_pnd0>;
+	pinctrl-10 = <&camera_pins_cam1_pnd1>;
+	pinctrl-11 = <&camera_pins_cam1_mclk_0>;
+	pinctrl-12 = <&camera_pins_cam1_mclk_1>;
+	pinctrl-13= <&camera_pins_cam_ldo0_0>;
+	pinctrl-14 = <&camera_pins_cam_ldo0_1>;
+	
+	status = "okay";
+
+};
+/*wuyt3 add end*/
+/* CAMERA GPIO end */
+
+/* CONSYS GPIO standardization */
+&pio {
+	consys_pins_default: default {
+
+	};
+
+	gpslna_pins_init: gpslna@0 {
+
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO79__FUNC_GPIO79>;
+			slew-rate = <0>;
+			bias-disable;
+			output-low;
+		};
+	};
+
+	gpslna_pins_oh: gpslna@1 {
+
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO79__FUNC_GPIO79>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+
+	gpslna_pins_ol: gpslna@2 {
+
+	    pins_cmd_dat {
+			pins = <PINMUX_GPIO79__FUNC_GPIO79>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+
+};
+
+&consys {
+	vcn18-supply = <&mt_pmic_vcn18_ldo_reg>;
+	vcn28-supply = <&mt_pmic_vcn28_ldo_reg>;
+	vcn33_bt-supply = <&mt_pmic_vcn33_bt_ldo_reg>;
+	vcn33_wifi-supply = <&mt_pmic_vcn33_wifi_ldo_reg>;
+	pinctrl-names = "default", "gps_lna_state_init", "gps_lna_state_oh", "gps_lna_state_ol",
+		"bgf_eint_state_init", "bgf_eint_state_mux", "bgf_eint_state_deinit";
+	pinctrl-0 = <&consys_pins_default>;
+	pinctrl-1 = <&gpslna_pins_init>;
+	pinctrl-2 = <&gpslna_pins_oh>;
+	pinctrl-3 = <&gpslna_pins_ol>;
+	/*
+	 * Stock m2note 3.10 has no dedicated BGF GPIO.  BGF is wired through
+	 * the CONSYS interrupt, while GPIO92 is the Wi-Fi SDIO EINT.  Keep the
+	 * BGF pinctrl states inert so BT init cannot reconfigure the Wi-Fi IRQ.
+	 */
+	pinctrl-4 = <&consys_pins_default>;
+	pinctrl-5 = <&consys_pins_default>;
+	pinctrl-6 = <&consys_pins_default>;
+	status = "okay";
+
+};
+/* CONSYS end */
+/* Connectivity GPIO standardization */
+&pio {
+	pcfg_combo_pmu_en_pull_dis_cfgs:cfg_gpio57_model_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO57__FUNC_GPIO57>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_pmu_en_in_pulldown_cfgs:cfg_gpio57_model_in_pulldown {
+		combo_pins {
+			pins = <PINMUX_GPIO57__FUNC_GPIO57>;
+			bias-pull-down;
+		};
+	};
+	pcfg_combo_rst_pull_dis_cfgs:cfg_gpio86_model_in_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO86__FUNC_GPIO86>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_wifi_eint_in_pull_dis_cfgs:cfg_gpio92_model_in_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO92__FUNC_GPIO92>;
+			slew-rate = <0>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_wifi_eint_in_pullup_cfgs:cfg_gpio92_model_in_pullup {
+		combo_pins {
+			pins = <PINMUX_GPIO92__FUNC_GPIO92>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+	pcfg_combo_bgf_eint_in_pulldown_cfgs:cfg_gpio92_model_in_pulldown {
+		combo_pins {
+			pins = <PINMUX_GPIO92__FUNC_GPIO92>;
+			slew-rate = <0>;
+			bias-pull-down;
+		};
+	};
+	pcfg_combo_urxd_uart_pull_dis_cfgs:cfg_gpio76_mode1_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO76__FUNC_URXD1>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_urxd_gpio_in_pullup_cfgs:cfg_gpio76_model_in_pullup {
+		combo_pins {
+			pins = <PINMUX_GPIO76__FUNC_GPIO76>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+	pcfg_combo_urxd_gpio_in_pull_dis_cfgs:cfg_gpio76_model_in_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO76__FUNC_GPIO76>;
+			slew-rate = <0>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_utxd_uart_pull_dis_cfgs:cfg_gpio77_mode1_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO77__FUNC_UTXD1>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_pcm_daiclk_pull_dis_cfgs:cfg_gpio184_mode5_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO184__FUNC_MRG_CLK>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_pcm_daipcmin_pull_dis_cfgs:cfg_gpio185_mode5_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO185__FUNC_MRG_DI>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_pcm_daipcmout_pull_dis_cfgs:cfg_gpio187_mode4_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO187__FUNC_MRG_DO>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_pcm_daisync_pull_dis_cfgs:cfg_gpio188_mode4_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO188__FUNC_MRG_SYNC>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_gps_lna_pull_dis_cfgs:cfg_gpio79_model_in_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO79__FUNC_GPIO79>;
+			bias-disable;
+		};
+	};
+	pcfg_combo_gps_sync_pull_dis_cfgs:cfg_gpio19_mode6_pull_dis {
+		combo_pins {
+			pins = <PINMUX_GPIO19__FUNC_GPS_FRAME_SYNC>;
+			bias-disable;
+		};
+	};
+};
+&connectivity{
+	gpio_gps_lna_pin = <&pio 79 0>;
+	pinctrl-names = "gpio_pmu_en_pull_dis",
+		"gpio_pmu_en_in_pulldown", 
+		"gpio_rst_pull_dis", 
+		"gpio_wifi_eint_in_pull_dis",
+		"gpio_wifi_eint_in_pullup",
+		"gpio_urxd_uart_pull_dis",
+		"gpio_urxd_gpio_in_pullup",
+		"gpio_urxd_gpio_in_pull_dis",
+		"gpio_utxd_uart_pull_dis",
+		"gpio_pcm_daiclk_pull_dis",
+		"gpio_pcm_daipcmin_pull_dis",
+		"gpio_pcm_daipcmout_pull_dis", 
+		"gpio_pcm_daisync_pull_dis",
+		"gpio_gps_lna_pull_dis",
+		"gpio_gps_sync_pull_dis";
+	pinctrl-0 = <&pcfg_combo_pmu_en_pull_dis_cfgs>;
+	pinctrl-1 = <&pcfg_combo_pmu_en_in_pulldown_cfgs>;
+	pinctrl-2 = <&pcfg_combo_rst_pull_dis_cfgs>;
+	pinctrl-3 = <&pcfg_combo_wifi_eint_in_pull_dis_cfgs>;
+	pinctrl-4 = <&pcfg_combo_wifi_eint_in_pullup_cfgs>;
+	pinctrl-5 = <&pcfg_combo_urxd_uart_pull_dis_cfgs>;
+	pinctrl-6 = <&pcfg_combo_urxd_gpio_in_pullup_cfgs>;
+	pinctrl-7 = <&pcfg_combo_urxd_gpio_in_pull_dis_cfgs>;
+	pinctrl-8 = <&pcfg_combo_utxd_uart_pull_dis_cfgs>;
+	pinctrl-9 = <&pcfg_combo_pcm_daiclk_pull_dis_cfgs>;
+	pinctrl-10 = <&pcfg_combo_pcm_daipcmin_pull_dis_cfgs>;
+	pinctrl-11 = <&pcfg_combo_pcm_daipcmout_pull_dis_cfgs>;
+	pinctrl-12 = <&pcfg_combo_pcm_daisync_pull_dis_cfgs>;
+	pinctrl-13 = <&pcfg_combo_gps_lna_pull_dis_cfgs>;
+	pinctrl-14 = <&pcfg_combo_gps_sync_pull_dis_cfgs>;
+};
+/* Connectivity end */
+
+/* Audio PMIC GPIO standardization */
+&pio {
+	audpmicclk_mode0: audpmicclk-mode0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO143__FUNC_GPIO143>,
+			       <PINMUX_GPIO144__FUNC_GPIO144>,
+			       <PINMUX_GPIO145__FUNC_GPIO145>;
+			slew-rate = <0>;
+			bias-disable;
+			bias-pull-down = <00>;
+			output-low;
+		};
+	};
+
+	audpmicclk_mode1: audpmicclk-mode1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO143__FUNC_AUD_CLK_MOSI>,
+			       <PINMUX_GPIO144__FUNC_AUD_DAT_MISO>,
+			       <PINMUX_GPIO145__FUNC_AUD_DAT_MOSI>;
+			slew-rate = <1>;
+			bias-disable;
+			bias-pull-down = <00>;
+		};
+	};
+
+	extamp_pulllow: extamp-pulllow {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO117__FUNC_GPIO117>;
+			slew-rate = <0>;
+			bias-disable;
+			output-low;
+		};
+	};
+
+	extamp_pullhigh: extamp-pullhigh {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO117__FUNC_GPIO117>;
+			slew-rate = <0>;
+			bias-disable;
+			output-high;
+		};
+	};
+
+};
+
+&audgpio {
+	pinctrl-names = "audpmicclk-mode0", "audpmicclk-mode1",
+			"extamp-pulllow", "extamp-pullhigh";
+	pinctrl-0 = <&audpmicclk_mode0>;
+	pinctrl-1 = <&audpmicclk_mode1>;
+	pinctrl-2 = <&extamp_pulllow>;
+	pinctrl-3 = <&extamp_pullhigh>;
+	extspkamp-gpio = <117 0>;
+};
+
+/* mmc start */
+&mmc0 {
+		clk_src = /bits/ 8 <MSDC50_CLKSRC_400MHZ>;
+		bus-width = <8>;
+		max-frequency = <200000000>;
+		cap-mmc-highspeed;
+		msdc-sys-suspend;
+		mmc-ddr-1_8v;
+		mmc-hs200-1_8v;
+		mmc-hs400-1_8v;
+		non-removable;
+		pinctl = <&mmc0_pins_default>;
+		register_setting = <&mmc0_register_setting_default>;
+		host_function = /bits/ 8 <MSDC_EMMC>;
+		bootable;
+		status = "okay";
+};
+
+&mmc1 {
+		clk_src = /bits/ 8 <MSDC30_CLKSRC_200MHZ>;
+		bus-width = <4>;
+		max-frequency = <200000000>;
+		msdc-sys-suspend;
+		cap-sd-highspeed;
+		sd-uhs-sdr12;
+		sd-uhs-sdr25;
+		sd-uhs-sdr50;
+		sd-uhs-sdr104;
+		sd-uhs-ddr50;
+		pinctl = <&mmc1_pins_default>;
+		pinctl_sdr104 = <&mmc1_pins_sdr104>;
+		pinctl_sdr50 = <&mmc1_pins_sdr50>;
+		pinctl_ddr50 = <&mmc1_pins_ddr50>;
+		register_setting = <&mmc1_register_setting_default>;
+		host_function = /bits/ 8 <MSDC_SD>;
+		cd_level = /bits/ 8 <MSDC_CD_LOW>;
+		cd-gpios = <&pio 5 0>;
+		status = "okay";
+};
+
+&mmc2 {
+		clk_src = /bits/ 8 <MSDC30_CLKSRC_200MHZ>;
+		bus-width = <4>;
+		max-frequency = <50000000>;
+		cap-sd-highspeed;
+		cap-sdio-irq;
+		ocr_avail = <0x00ff8080>;
+		vio18-supply = <&mt_pmic_vio18_ldo_reg>;
+		non-removable;
+		host_function = /bits/ 8 <MSDC_SDIO>;
+		status = "okay";
+};
+
+&mmc3 {
+		clk_src = /bits/ 8 <MSDC30_CLKSRC_200MHZ>;
+		bus-width = <4>;
+		max-frequency = <50000000>;
+		cap-sd-highspeed;
+		sd-uhs-sdr12;
+		sd-uhs-sdr25;
+		sd-uhs-sdr50;
+		host_function = /bits/ 8 <MSDC_SDIO>;
+		non-removable;
+		status = "okay";
+};
+
+&pio {
+	mmc0_pins_default: mmc0@default {
+			pins_cmd {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_dat {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_clk {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_rst {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_ds {
+				drive-strength = /bits/ 8 <2>;
+			};
+	};
+
+	mmc0_register_setting_default: mmc0@register_default {
+		dat0rddly      = /bits/ 8 <0>;
+		dat1rddly      = /bits/ 8 <0>;
+		dat2rddly      = /bits/ 8 <0>;
+		dat3rddly      = /bits/ 8 <0>;
+		dat4rddly      = /bits/ 8 <0>;
+		dat5rddly      = /bits/ 8 <0>;
+		dat6rddly      = /bits/ 8 <0>;
+		dat7rddly      = /bits/ 8 <0>;
+		datwrddly      = /bits/ 8 <0>;
+		cmdrrddly      = /bits/ 8 <0>;
+		cmdrddly       = /bits/ 8 <0>;
+		cmd_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+		rdata_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+		wdata_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+
+		ett-hs200-cells = <12>;
+		ett-hs200-default = <OFFSET_MSDC_PATCH_BIT0	MSDC_PB0_INT_DAT_LATCH_CK_SEL 0x0
+			OFFSET_MSDC_PATCH_BIT0	MSDC_PB0_CKGEN_MSDC_DLY_SEL   0x0
+			OFFSET_MSDC_PATCH_BIT1	MSDC_PB1_CMD_RSP_TA_CNTR      0x1
+			OFFSET_MSDC_IOCON		MSDC_IOCON_RSPL               0x1
+			OFFSET_MSDC_PAD_TUNE0	MSDC_PAD_TUNE0_CMDRDLY        0xf
+			OFFSET_MSDC_PAD_TUNE0	MSDC_PAD_TUNE0_CMDRRDLY       0x0
+			OFFSET_MSDC_PATCH_BIT1		MSDC_PB1_WRDAT_CRCS_TA_CNTR   0x1
+			OFFSET_MSDC_PAD_TUNE0	MSDC_PAD_TUNE0_DATWRDLY       0xf
+			OFFSET_MSDC_IOCON			MSDC_IOCON_W_D0SPL            0x1
+			OFFSET_MSDC_DAT_RDDLY0		MSDC_DAT_RDDLY0_D0            0xf
+			OFFSET_MSDC_PAD_TUNE0	MSDC_PAD_TUNE0_DATRRDLY       0x16
+			OFFSET_MSDC_IOCON		MSDC_IOCON_R_D_SMPL           0x0>;
+
+		ett-hs400-cells = <8>;
+		ett-hs400-default = <OFFSET_MSDC_PATCH_BIT0	MSDC_PB0_INT_DAT_LATCH_CK_SEL	0x0
+			OFFSET_MSDC_PATCH_BIT0		MSDC_PB0_CKGEN_MSDC_DLY_SEL		0x0
+			OFFSET_EMMC50_PAD_DS_TUNE	MSDC_EMMC50_PAD_DS_TUNE_DLY1	0x2
+			OFFSET_EMMC50_PAD_DS_TUNE	MSDC_EMMC50_PAD_DS_TUNE_DLY3	0xe
+			OFFSET_MSDC_PATCH_BIT1			MSDC_PB1_CMD_RSP_TA_CNTR	0x1
+			OFFSET_MSDC_IOCON		MSDC_IOCON_RSPL				0x0
+			OFFSET_MSDC_PAD_TUNE0			MSDC_PAD_TUNE0_CMDRDLY		0xf
+			OFFSET_MSDC_PAD_TUNE0		MSDC_PAD_TUNE0_CMDRRDLY		0xd>;
+	};
+
+	mmc1_pins_default: mmc1@default {
+			pins_cmd {
+				drive-strength = /bits/ 8 <3>;
+			};
+			pins_dat {
+				drive-strength = /bits/ 8 <3>;
+			};
+			pins_clk {
+				drive-strength = /bits/ 8 <3>;
+			};
+	};
+
+	mmc1_pins_sdr104: mmc1@sdr104 {
+			pins_cmd {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_dat {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_clk {
+				drive-strength = /bits/ 8 <3>;
+			};
+	};
+
+	mmc1_pins_sdr50: mmc1@sdr50 {
+			pins_cmd {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_dat {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_clk {
+				drive-strength = /bits/ 8 <3>;
+			};
+	};
+
+	mmc1_pins_ddr50: mmc1@ddr50 {
+			pins_cmd {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_dat {
+				drive-strength = /bits/ 8 <2>;
+			};
+			pins_clk {
+				drive-strength = /bits/ 8 <3>;
+			};
+	};
+
+	mmc1_register_setting_default: mmc1@register_default {
+				dat0rddly      = /bits/ 8 <0>;
+				dat1rddly      = /bits/ 8 <0>;
+				dat2rddly      = /bits/ 8 <0>;
+				dat3rddly      = /bits/ 8 <0>;
+				datwrddly      = /bits/ 8 <0>;
+				cmdrrddly      = /bits/ 8 <0>;
+				cmdrddly       = /bits/ 8 <0>;
+				cmd_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+				rdata_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+				wdata_edge = /bits/ 8 <MSDC_SMPL_FALLING>;
+	};
+};
+/* mmc end */
+
+&nfc {
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	/delete-property/ pinctrl-1;
+	/delete-property/ pinctrl-2;
+	/delete-property/ pinctrl-3;
+	/delete-property/ pinctrl-4;
+	/delete-property/ pinctrl-5;
+	/delete-property/ pinctrl-6;
+	/delete-property/ pinctrl-7;
+	status = "disabled";
+};
+/* NFC end: stock m2note keeps GPIO143/144/145 for PMIC audio, not donor NFC. */
+
+/* USB GPIO Kernal Standardization start */
+&pio {
+	usb_default: usb_default {
+	};
+
+	gpio0_mode1_iddig: iddig_irq_init {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO0__FUNC_IDDIG>;
+			slew-rate = <0>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	gpio83_mode2_drvvbus: drvvbus_init {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_GPIO83>;
+			slew-rate = <1>;
+			bias-pull-up = <00>;
+		};
+	};
+
+	gpio83_mode2_drvvbus_low: drvvbus_low {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_GPIO83>;
+			slew-rate = <1>;
+			output-low;
+			bias-pull-down = <00>;
+		};
+	};
+
+	gpio83_mode2_drvvbus_high: drvvbus_high {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO83__FUNC_GPIO83>;
+			slew-rate = <1>;
+			output-high;
+			bias-pull-down = <00>;
+		};
+	};
+};
+
+&usb0 {
+	iddig_gpio = <0 1>;
+	pinctrl-names = "usb_default", "iddig_irq_init", "drvvbus_init", "drvvbus_low", "drvvbus_high";
+	pinctrl-0 = <&usb_default>;
+	pinctrl-1 = <&gpio0_mode1_iddig>;
+	pinctrl-2 = <&gpio83_mode2_drvvbus>;
+	pinctrl-3 = <&gpio83_mode2_drvvbus_low>;
+	pinctrl-4 = <&gpio83_mode2_drvvbus_high>;
+	status = "okay";
+};
+/* USB GPIO Kernal Standardization end */
+
+/* LCM GPIO Kernal Standardization start */
+&pio {
+	lcm_mode_default: lcm_mode_default {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_GPIO80>;
+		};
+	};
+
+	lcm_mode_00: lcm_mode@0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_GPIO80>;
+		};
+	};
+
+	lcm_mode_01: lcm_mode@1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_I2S0_BCK>;
+		};
+	};
+
+	lcm_mode_02: lcm_mode@2 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_PCM1_CLK_1>;
+		};
+	};
+
+	lcm_mode_03: lcm_mode@3 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_I2S3_BCK>;
+		};
+	};
+
+	lcm_mode_04: lcm_mode@4 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_I2S1_BCK>;
+		};
+	};
+
+	lcm_mode_05: lcm_mode@5 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_PWM4>;
+		};
+	};
+
+	lcm_mode_06: lcm_mode@6 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_I2S2_BCK>;
+		};
+	};
+
+	lcm_mode_07: lcm_mode@7 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO80__FUNC_DBG_MON_A28>;
+		};
+	};
+};
+
+&lcm_mode {
+	pinctrl-names = "default", "lcm_mode_00", "lcm_mode_01", "lcm_mode_02", "lcm_mode_03", "lcm_mode_04",
+	 "lcm_mode_05", "lcm_mode_06", "lcm_mode_07";
+	pinctrl-0 = <&lcm_mode_default>;
+	pinctrl-1 = <&lcm_mode_00>;
+	pinctrl-2 = <&lcm_mode_01>;
+	pinctrl-3 = <&lcm_mode_02>;
+	pinctrl-4 = <&lcm_mode_03>;
+	pinctrl-5 = <&lcm_mode_04>;
+	pinctrl-6 = <&lcm_mode_05>;
+	pinctrl-7 = <&lcm_mode_06>;
+	pinctrl-8 = <&lcm_mode_07>;
+	lcm_power_gpio = <&pio 80 0>;
+	lcm_bl_gpio = <&pio 129 0>;
+	status = "okay";
+};
+
+/* M1612 live DT dump: FocalTech touch is on i2c1@0x38 (ft5x0x driver bound on
+ * stock); GT9xx@0x5d is the secondary stock candidate, never bound on this
+ * unit — kept present but disabled (no GT driver in m5s build).
+ * Extra compatibles on cap_touch@38 let the in-tree MZ_FT5346 FocalTech
+ * driver match the node. */
+&i2c0 {
+	status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+
+	cap_touch@38 {
+		compatible = "mediatek,cap_touch", "focaltech,ft5x46",
+			     "mediatek,cap_touch_cust";
+		reg = <0x38>;
+		interrupt-parent = <&eintc>;
+		interrupts = <10 2>;
+		reset-gpio = <&pio 62 0>;
+		status = "okay";
+	};
+
+	cap_touch_gt@5d {
+		compatible = "mediatek,cap_touch_gt", "goodix,gt9xx";
+		reg = <0x5d>;
+		interrupt-parent = <&eintc>;
+		interrupts = <10 2>;
+		reset-gpio = <&pio 62 0>;
+		status = "disabled";
+	};
+};
+
+/* LCM GPIO Kernal Standardization end */
